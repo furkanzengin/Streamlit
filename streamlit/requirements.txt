@@ -1,0 +1,10 @@
+streamlit
+numpy
+matplotlib
+altair
+pandas
+scikit-learn
+plotly
+base64
+pickle
+google-cloud-firestore
