@@ -51,24 +51,24 @@ def visualization():
   st.sidebar.write("Eğer veri setinizi belirli bir değer aralığına göre sınırlamak istiyorsanız lütfen değerleri giriniz")
   st.sidebar.header("Sayısal veriler için")
   cols = st.sidebar.selectbox("Sınırlamak istediğiniz değişkeni seçin", ss.filterDf.columns)
-  startValue = st.sidebar.number_input("Başlangıç Değeri",value=-1)
-  endValue = st.sidebar.number_input("Son Değeri",value=-1)
+  startValue = st.sidebar.number_input("Başlangıç Değeri", value=0)
+  endValue = st.sidebar.number_input("Son Değeri",value=0)
 
   filtre = st.sidebar.button("Sınırlandır")
+  
   if filtre:
-    if startValue != -1 and endValue != -1:
       ss.filterDf = ss.filterDf.loc[(ss.filterDf[cols] >= startValue) & (ss.filterDf[cols] <= endValue)]
-
       ss.filterList.append(cols+ ", min: " + str(ss.filterDf[cols].min()) + ", max: "+ str(ss.filterDf[cols].max()))
       for i in ss.filterList:
         st.sidebar.write(i)
-    else:
-      st.sidebar.write("Lütfen Başlangıç ve Bitiş Değerlerini Belirleyiniz!!")
-
+  
   st.sidebar.header("Kategorik Veriler İçin")
-  col = st.sidebar.selectbox("Sınırlamak istediğiniz sütunu seçin", ss.filterDf.columns)
-  cols = st.sidebar.multiselect("Değerleri seçiniz",ss.filterDf[col].unique())
+
+  col = st.sidebar.selectbox("Sınırlamak istediğiniz sütunu seçin", ss.x.columns)
+  cols = st.sidebar.multiselect("Değerleri seçiniz",ss.x[col].unique())
   filtre = st.sidebar.button("Sınırlandırın")
+  
+
   if filtre:
     if cols != []:
       ss.filterDf = ss.filterDf.loc[ss.filterDf[col].isin(cols)]
@@ -86,6 +86,11 @@ def visualization():
   col1, col2 = st.sidebar.beta_columns(2)
   hist = col1.button("Göster")
   gizle = col2.button("Gizle")
+  st.sidebar.write("Belirlediğiniz Sınır Değerlerini Kaldırabilirsiniz")
+  sifirla = st.sidebar.button("Sınırları Kaldır")
+  if sifirla:
+    ss.filterDf = ss.x
+    ss.filterList = []
   if hist:
     st.header("GRAFİKLER")
     st.bar_chart(ss.filterDf[cols][start:end])
@@ -273,11 +278,14 @@ def builtSideBar(df):
   col1, col2 = st.sidebar.beta_columns(2)
   bagimsiz = col1.button("Bağımsız Değişken Olarak Belirle")
   bagimli = col2.button("Bağımlı Değişken Olarak Belirle")
+  sifirla = st.sidebar.button("Bağımlı-Bağımsız Değişkenleri Sıfırla")
+
   if bagimsiz:
     ss.ind = variables
   if bagimli:
     ss.dep = variables
-
+  if sifirla:
+    ss.ind, ss.dep = [],[]
   
 
 
@@ -305,6 +313,7 @@ if __name__ == '__main__':
         ss.filterDf = df
         ss.prev = df
         ss.control = False
+        ss.ind, ss.dep = [],[]
       st.header("ORİJİNAL VERİLER")
       dataframe(df)
       st.header("İŞLENMİŞ VERİLER")
@@ -350,18 +359,17 @@ if __name__ == '__main__':
       title("MAKİNE ÖĞRENMESİ ALGORİTMALARI")
 
       regOrClass = st.sidebar.selectbox("Algoritma Türünü Seçiniz", ("Regresyon", "Sınıflandırma"))
-
       if regOrClass == "Regresyon":
         model = st.sidebar.selectbox("Algoritmalar",
-                              ("Linear Regression","SVR", "Decision Tree Regrressor", "Random Forest"))
+                              ("Linear Regression","SVR", "Decision Tree Regressor", "Random Forest"))
       else:
         model = st.sidebar.selectbox("Algoritmalar",
                               ("Logistic Regression","KNN", "SVC", "Naive Bayes", "Decision Tree Classifier"))
-      
+        
       slider = st.sidebar.slider("Train-Test Split Oranını Belirleyin(Yüzdelik)",min_value=1,max_value=99,
                                   value=33)
-      print(slider/100)
       training = st.sidebar.button("Train")
+      
       if training:
         dic = {}
         st.header("Test Verilerine Göre Model Başarı Sonuçları")
