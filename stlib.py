@@ -74,14 +74,14 @@ def visualization():
       ss.filterDf = ss.filterDf.loc[ss.filterDf[col].isin(cols)]
 
   st.sidebar.write("Görselleştirecek satır aralığını sınırla")
-  start = st.sidebar.slider("Başlangıç Değer",0,len(ss.x))
-  end = st.sidebar.slider("Son Değer",0,len(ss.x),len(ss.x))
-  cols = st.sidebar.multiselect("Görselleştirilecek değişkenleri seçin", ss.x.columns)
+  start = st.sidebar.slider("Başlangıç Değer",0,len(ss.filterDf))
+  end = st.sidebar.slider("Son Değer",0,len(ss.filterDf),len(ss.filterDf))
+  cols = st.sidebar.multiselect("Görselleştirilecek değişkenleri seçin", ss.filterDf.columns)
 
   
   col1, col2 = st.sidebar.beta_columns(2)
-  X = col1.selectbox("X değerini seçin", ss.x.columns)
-  Y = col2.selectbox("Y değerini seçin", ss.x.columns)
+  X = col1.selectbox("X değerini seçin", ss.filterDf.columns)
+  Y = col2.selectbox("Y değerini seçin", ss.filterDf.columns)
 
   col1, col2 = st.sidebar.beta_columns(2)
   hist = col1.button("Göster")
